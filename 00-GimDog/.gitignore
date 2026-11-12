@@ -1,0 +1,29 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Entornos y editores
+.vscode/
+*.log
+
+# Python (Caché, compilados y entornos virtuales)
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Bases de datos SQLite3 (Evita subir datos reales de prueba)
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Seguridad, contraseñas y variables de entorno
+.env
+.env.*
+credentials.json
+token.json
+*secret*

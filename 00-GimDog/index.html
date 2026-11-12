@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GimDog | Registro de Socios</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Banner Superior Dominante (Naranjo) -->
+  <header class="hero-banner">
+    <div class="banner-content">
+      <span class="badge-complementario">CENTRO DE ACONDICIONAMIENTO CANINO</span>
+      <h1>GimDog</h1>
+      <p>Entrenamiento, socialización y bienestar físico a la medida de tu mejor amigo.</p>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal en una sola pantalla -->
+  <main class="container">
+    <form id="gymdogForm" class="form-card" novalidate>
+      
+      <!-- SECCIÓN 1: DATOS DE LA MASCOTA -->
+      <section class="form-section">
+        <div class="section-header">
+          <span class="step-number">01</span>
+          <div>
+            <h2>Perfil del Atleta (Mascota)</h2>
+            <p class="section-desc">Información clave para asignar grupo y rutina segura.</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="petName">Nombre de la mascota *</label>
+          <input type="text" id="petName" name="petName" placeholder="Ej: Max, Luna, Rocky" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="petBreed">Raza o tamaño *</label>
+            <select id="petBreed" name="petBreed" required>
+              <option value="">Selecciona tamaño...</option>
+              <option value="pequeno">Pequeño (menos de 10 kg)</option>
+              <option value="mediano">Mediano (10 kg - 25 kg)</option>
+              <option value="grande">Grande (25 kg - 40 kg)</option>
+              <option value="gigante">Gigante (más de 40 kg)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="petAge">Edad aproximada *</label>
+            <select id="petAge" name="petAge" required>
+              <option value="">Selecciona etapa...</option>
+              <option value="cachorro">Cachorro (4 a 12 meses)</option>
+              <option value="adulto">Adulto joven (1 a 6 años)</option>
+              <option value="senior">Senior (+7 años - Bajo impacto)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="energyLevel">Nivel de energía habitual *</label>
+          <select id="energyLevel" name="energyLevel" required>
+            <option value="">¿Cómo se comporta en casa o paseos?</option>
+            <option value="bajo">Tranquilo / Sedentario (necesita activación suave)</option>
+            <option value="medio">Equilibrado (juega pero sabe descansar)</option>
+            <option value="alto">Inagotable / Hiperactivo (necesita quemar mucha energía)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Objetivo principal en el gimnasio *</label>
+          <div class="checkbox-grid">
+            <label class="option-card">
+              <input type="checkbox" name="goals" value="peso">
+              <span>Control de peso</span>
+            </label>
+            <label class="option-card">
+              <input type="checkbox" name="goals" value="socializacion">
+              <span>Socialización con perros</span>
+            </label>
+            <label class="option-card">
+              <input type="checkbox" name="goals" value="agility">
+              <span>Agility y destreza</span>
+            </label>
+            <label class="option-card">
+              <input type="checkbox" name="goals" value="rehabilitacion">
+              <span>Movilidad / Hidroterapia</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="socialization">¿Convive bien con otros perros? *</label>
+            <select id="socialization" name="socialization" required>
+              <option value="">Selecciona una opción...</option>
+              <option value="si">Sí, es muy sociable</option>
+              <option value="selectivo">Es selectivo (requiere presentación)</option>
+              <option value="no">No, prefiere entrenamiento individual</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="vaccines">¿Carnet de vacunas al día? *</label>
+            <select id="vaccines" name="vaccines" required>
+              <option value="">Selecciona estado...</option>
+              <option value="si">Sí (Óctuple, Antirrábica y Kennel Cough)</option>
+              <option value="pendiente">En proceso / Próxima a renovar</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="medicalNotes">Condiciones médicas, alergias o lesiones previas</label>
+          <textarea id="medicalNotes" name="medicalNotes" rows="3" placeholder="Ej: Displasia leve, alergia al pollo, o escribe 'Ninguna'"></textarea>
+        </div>
+      </section>
+
+      <hr class="divider">
+
+      <!-- SECCIÓN 2: DATOS DEL DUEÑO -->
+      <section class="form-section">
+        <div class="section-header">
+          <span class="step-number step-owner">02</span>
+          <div>
+            <h2>Datos del Tutor (Dueño)</h2>
+            <p class="section-desc">Contacto directo para reportes de avance y emergencias.</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ownerName">Nombre y Apellido *</label>
+          <input type="text" id="ownerName" name="ownerName" placeholder="Ej: Camila Valdés" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ownerPhone">Número Telefónico *</label>
+            <input type="tel" id="ownerPhone" name="ownerPhone" placeholder="Ej: +56 9 1234 5678" required>
+          </div>
+
+          <div class="form-group">
+            <label for="ownerEmail">Correo Electrónico *</label>
+            <input type="email" id="ownerEmail" name="ownerEmail" placeholder="Ej: camila@correo.com" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mensajes de feedback -->
+      <div id="formAlert" class="alert hidden"></div>
+
+      <!-- Botón de envío -->
+      <div class="form-actions">
+        <button type="submit" class="btn-submit">Completar Inscripción en GimDog</button>
+      </div>
+    </form>
+
+    <!-- Tarjeta de Ficha Generada (visible después de cerrar la X) -->
+    <section id="summaryCard" class="summary-banner hidden">
+      <h2>¡Ficha de Ingreso Generada!</h2>
+      <p id="summaryText"></p>
+      <button type="button" id="resetBtn" class="btn-secondary">Registrar otra mascota</button>
+    </section>
+  </main>
+
+  <!-- MODAL DE CELEBRACIÓN CON CONFETI, EMOTICON Y BOTÓN X -->
+  <div id="celebrationModal" class="celebration-overlay hidden">
+    <canvas id="confettiCanvas"></canvas>
+    <div class="celebration-box">
+      <button type="button" id="closeCelebrationBtn" class="close-x" title="Cerrar y ver ficha">&times;</button>
+      <div class="dog-emoji" aria-hidden="true">🐶</div>
+      <h2>¡Guau! ¡Bienvenido a GimDog!</h2>
+      <p id="celebrationPetMsg">Tu peludo ya es parte de la manada.</p>
+      <small>Haz clic en la <strong>X</strong> para leer su ficha de ingreso</small>
+    </div>
+  </div>
+
+  <footer class="footer-banner">
+    <p>GimDog &copy; 2026 — Salud, fuerza y juego responsable.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
