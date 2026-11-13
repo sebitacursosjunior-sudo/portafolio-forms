@@ -5,19 +5,56 @@ document.addEventListener('DOMContentLoaded', () => {
   const summaryText = document.getElementById('summaryText');
   const resetBtn = document.getElementById('resetBtn');
 
-  // Elementos del Modal de Celebración
+  const formScreen = document.getElementById('formScreen');
+  const adminScreen = document.getElementById('adminScreen');
+
+  // Elementos de Celebración
   const celebrationModal = document.getElementById('celebrationModal');
   const celebrationPetMsg = document.getElementById('celebrationPetMsg');
   const closeCelebrationBtn = document.getElementById('closeCelebrationBtn');
   const confettiCanvas = document.getElementById('confettiCanvas');
 
+  // Elementos de Admin y Data View
+  const openAdminLoginBtn = document.getElementById('openAdminLoginBtn');
+  const adminLoginModal = document.getElementById('adminLoginModal');
+  const closeLoginBtn = document.getElementById('closeLoginBtn');
+  const submitLoginBtn = document.getElementById('submitLoginBtn');
+  const adminUser = document.getElementById('adminUser');
+  const adminPass = document.getElementById('adminPass');
+  const loginError = document.getElementById('loginError');
+
+  const backToFormBtn = document.getElementById('backToFormBtn');
+  const addNewPetBtn = document.getElementById('addNewPetBtn');
+  const resetTableBtn = document.getElementById('resetTableBtn');
+  const exportExcelBtn = document.getElementById('exportExcelBtn');
+  const exportPdfBtn = document.getElementById('exportPdfBtn');
+  const excelTableBody = document.getElementById('excelTableBody');
+
   let confettiAnimationId = null;
 
+  // 3 DATOS FICTICIOS INICIALES
+  const defaultRecords = [
+    {
+      mascota: { nombre: "Max", tamano: "Grande", etapa: "Adulto joven", energia: "Inagotable", objetivos: ["Control de peso", "Agility"], socializacion: "Sí, sociable", vacunas: "Al día", notasMedicas: "Ninguna" },
+      dueno: { nombreCompleto: "Carlos Ruiz", telefono: "+56911223344", correo: "carlos.ruiz@correo.com" }
+    },
+    {
+      mascota: { nombre: "Luna", tamano: "Pequeño", etapa: "Cachorro", energia: "Equilibrado", objetivos: ["Socialización"], socializacion: "Sí, sociable", vacunas: "Al día", notasMedicas: "Sensible al ruido" },
+      dueno: { nombreCompleto: "Andrea Soto", telefono: "+56988776655", correo: "andrea.soto@correo.com" }
+    },
+    {
+      mascota: { nombre: "Thor", tamano: "Gigante", etapa: "Senior", energia: "Tranquilo", objetivos: ["Movilidad"], socializacion: "Selectivo", vacunas: "Pendiente", notasMedicas: "Displasia leve" },
+      dueno: { nombreCompleto: "Matías Rojas", telefono: "+56933445566", correo: "matias.rojas@correo.com" }
+    }
+  ];
+
+  let sessionRecords = JSON.parse(JSON.stringify(defaultRecords));
+
+  // Envío del Formulario principal
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     ocultarAlerta();
 
-    // Captura de valores - Mascota
     const petName = document.getElementById('petName').value.trim();
     const petBreed = document.getElementById('petBreed').value;
     const petAge = document.getElementById('petAge').value;
@@ -26,16 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const vaccines = document.getElementById('vaccines').value;
     const medicalNotes = document.getElementById('medicalNotes').value.trim() || 'Sin observaciones';
 
-    // Captura de objetivos (checkboxes)
     const selectedGoals = Array.from(document.querySelectorAll('input[name="goals"]:checked'))
-      .map(cb => cb.nextElementSibling.textContent);
+      .map(cb => cb.value);
 
-    // Captura de valores - Dueño
     const ownerName = document.getElementById('ownerName').value.trim();
     const ownerPhone = document.getElementById('ownerPhone').value.trim();
     const ownerEmail = document.getElementById('ownerEmail').value.trim();
 
-    // Validaciones
     if (!petName || !petBreed || !petAge || !energyLevel || !socialization || !vaccines) {
       mostrarError('Por favor, completa todos los campos obligatorios de la mascota.');
       return;
@@ -56,7 +90,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Preparamos el texto de la Ficha de Ingreso (quedará lista debajo)
+    sessionRecords.push({
+      mascota: {
+        nombre: petName,
+        tamano: petBreed,
+        etapa: petAge,
+        energia: energyLevel,
+        objetivos: selectedGoals,
+        socializacion: socialization,
+        vacunas: vaccines,
+        notasMedicas: medicalNotes
+      },
+      dueno: {
+        nombreCompleto: ownerName,
+        telefono: ownerPhone,
+        correo: ownerEmail
+      }
+    });
+
     summaryText.innerHTML = `
       <strong>${petName}</strong> ha sido pre-inscrito correctamente bajo la tutela de <strong>${ownerName}</strong>.<br>
       Objetivos asignados: <em>${selectedGoals.join(', ')}</em>.<br>
@@ -66,26 +117,126 @@ document.addEventListener('DOMContentLoaded', () => {
     form.classList.add('hidden');
     summaryCard.classList.remove('hidden');
 
-    // Lanzamos la celebración (Sonido + Emoticón + Confeti)
     celebrationPetMsg.textContent = `¡${petName} ya está listo para entrenar!`;
     celebrationModal.classList.remove('hidden');
     reproducirLadrido();
     iniciarConfeti();
   });
 
-  // Cerrar el modal con la X para leer la Ficha de Ingreso
   closeCelebrationBtn.addEventListener('click', () => {
     celebrationModal.classList.add('hidden');
     detenerConfeti();
   });
 
-  // Botón para registrar otra mascota
   resetBtn.addEventListener('click', () => {
     form.reset();
     ocultarAlerta();
     summaryCard.classList.add('hidden');
     form.classList.remove('hidden');
   });
+
+  // --- LÓGICA DE ADMINISTRADOR / DATA VIEW ---
+  openAdminLoginBtn.addEventListener('click', () => {
+    adminUser.value = '';
+    adminPass.value = '';
+    loginError.classList.add('hidden');
+    adminLoginModal.classList.remove('hidden');
+  });
+
+  closeLoginBtn.addEventListener('click', () => {
+    adminLoginModal.classList.add('hidden');
+  });
+
+  submitLoginBtn.addEventListener('click', () => {
+    const userVal = adminUser.value.trim();
+    const passVal = adminPass.value.trim();
+
+    if (userVal === 'admin1' && passVal === 'admin1234') {
+      adminLoginModal.classList.add('hidden');
+      formScreen.classList.add('hidden');
+      renderExcelTable();
+      adminScreen.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      loginError.textContent = 'Usuario o contraseña incorrectos. (Prueba admin1 / admin1234)';
+      loginError.classList.remove('hidden');
+    }
+  });
+
+  // Botón Volver al formulario
+  backToFormBtn.addEventListener('click', () => {
+    adminScreen.classList.add('hidden');
+    formScreen.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Botón Agregar nueva mascota (desde el Data View)
+  addNewPetBtn.addEventListener('click', () => {
+    form.reset();
+    ocultarAlerta();
+    summaryCard.classList.add('hidden');
+    form.classList.remove('hidden');
+    adminScreen.classList.add('hidden');
+    formScreen.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Botón Resetear tabla
+  resetTableBtn.addEventListener('click', () => {
+    sessionRecords = JSON.parse(JSON.stringify(defaultRecords));
+    renderExcelTable();
+  });
+
+  // Botón Exportar a Excel (.xlsx real con SheetJS)
+  exportExcelBtn.addEventListener('click', () => {
+    const dataToExport = sessionRecords.map((item, index) => ({
+      "#": index + 1,
+      "Mascota": item.mascota.nombre,
+      "Tamaño": item.mascota.tamano,
+      "Edad": item.mascota.etapa,
+      "Energía": item.mascota.energia,
+      "Objetivos": item.mascota.objetivos.join(', '),
+      "Sociable": item.mascota.socializacion,
+      "Vacunas": item.mascota.vacunas,
+      "Notas Médicas": item.mascota.notasMedicas,
+      "Tutor": item.dueno.nombreCompleto,
+      "Teléfono": item.dueno.telefono,
+      "Correo": item.dueno.correo
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Inscripciones GimDog");
+    XLSX.writeFile(workbook, "gimdog_inscripciones.xlsx");
+  });
+
+  // Botón Exportar a PDF (Imprimir navegador)
+  exportPdfBtn.addEventListener('click', () => {
+    window.print();
+  });
+
+  // Renderizar filas en la tabla Data View
+  function renderExcelTable() {
+    excelTableBody.innerHTML = '';
+    sessionRecords.forEach((item, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${index + 1}</strong></td>
+        <td>${item.mascota.nombre}</td>
+        <td>${item.mascota.tamano}</td>
+        <td>${item.mascota.etapa}</td>
+        <td>${item.mascota.energia}</td>
+        <td>${item.mascota.objetivos.join(', ')}</td>
+        <td>${item.mascota.socializacion}</td>
+        <td>${item.mascota.vacunas}</td>
+        <td>${item.mascota.notasMedicas}</td>
+        <td><strong>${item.dueno.nombreCompleto}</strong></td>
+        <td>${item.dueno.telefono}</td>
+        <td>${item.dueno.correo}</td>
+      `;
+      excelTableBody.appendChild(tr);
+    });
+  }
 
   function mostrarError(mensaje) {
     formAlert.textContent = mensaje;
@@ -102,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return regex.test(email);
   }
 
-  // --- GENERADOR DE SONIDO DE LADRIDO (WEB AUDIO API) ---
+  // --- AUDIO DE LADRIDO ---
   function reproducirLadrido() {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -135,15 +286,14 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       const ahora = ctx.currentTime;
-      // Doble ladrido alegre ("¡Guau, guau!")
       crearGuau(ahora, 0.18, 220, 480);
       crearGuau(ahora + 0.26, 0.22, 240, 520);
     } catch (err) {
-      console.warn('El navegador bloqueó el audio automático:', err);
+      console.warn('Audio bloqueado:', err);
     }
   }
 
-  // --- ANIMACIÓN DE CONFETI CON LOS COLORES DE GIMDOG ---
+  // --- CONFETI ---
   function iniciarConfeti() {
     const ctx = confettiCanvas.getContext('2d');
     confettiCanvas.width = window.innerWidth;

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GimDog | Registro de Socios</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Librería SheetJS para exportar a .xlsx real -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -17,8 +19,8 @@
     </div>
   </header>
 
-  <!-- Contenedor Principal en una sola pantalla -->
-  <main class="container">
+  <!-- ================= PANTALLA 1: FORMULARIO DE REGISTRO ================= -->
+  <main id="formScreen" class="container">
     <form id="gymdogForm" class="form-card" novalidate>
       
       <!-- SECCIÓN 1: DATOS DE LA MASCOTA -->
@@ -41,10 +43,10 @@
             <label for="petBreed">Raza o tamaño *</label>
             <select id="petBreed" name="petBreed" required>
               <option value="">Selecciona tamaño...</option>
-              <option value="pequeno">Pequeño (menos de 10 kg)</option>
-              <option value="mediano">Mediano (10 kg - 25 kg)</option>
-              <option value="grande">Grande (25 kg - 40 kg)</option>
-              <option value="gigante">Gigante (más de 40 kg)</option>
+              <option value="Pequeño">Pequeño (menos de 10 kg)</option>
+              <option value="Mediano">Mediano (10 kg - 25 kg)</option>
+              <option value="Grande">Grande (25 kg - 40 kg)</option>
+              <option value="Gigante">Gigante (más de 40 kg)</option>
             </select>
           </div>
 
@@ -52,9 +54,9 @@
             <label for="petAge">Edad aproximada *</label>
             <select id="petAge" name="petAge" required>
               <option value="">Selecciona etapa...</option>
-              <option value="cachorro">Cachorro (4 a 12 meses)</option>
-              <option value="adulto">Adulto joven (1 a 6 años)</option>
-              <option value="senior">Senior (+7 años - Bajo impacto)</option>
+              <option value="Cachorro">Cachorro (4 a 12 meses)</option>
+              <option value="Adulto joven">Adulto joven (1 a 6 años)</option>
+              <option value="Senior">Senior (+7 años - Bajo impacto)</option>
             </select>
           </div>
         </div>
@@ -63,9 +65,9 @@
           <label for="energyLevel">Nivel de energía habitual *</label>
           <select id="energyLevel" name="energyLevel" required>
             <option value="">¿Cómo se comporta en casa o paseos?</option>
-            <option value="bajo">Tranquilo / Sedentario (necesita activación suave)</option>
-            <option value="medio">Equilibrado (juega pero sabe descansar)</option>
-            <option value="alto">Inagotable / Hiperactivo (necesita quemar mucha energía)</option>
+            <option value="Tranquilo">Tranquilo / Sedentario (necesita activación suave)</option>
+            <option value="Equilibrado">Equilibrado (juega pero sabe descansar)</option>
+            <option value="Inagotable">Inagotable / Hiperactivo (necesita quemar mucha energía)</option>
           </select>
         </div>
 
@@ -73,19 +75,19 @@
           <label>Objetivo principal en el gimnasio *</label>
           <div class="checkbox-grid">
             <label class="option-card">
-              <input type="checkbox" name="goals" value="peso">
+              <input type="checkbox" name="goals" value="Control de peso">
               <span>Control de peso</span>
             </label>
             <label class="option-card">
-              <input type="checkbox" name="goals" value="socializacion">
+              <input type="checkbox" name="goals" value="Socialización">
               <span>Socialización con perros</span>
             </label>
             <label class="option-card">
-              <input type="checkbox" name="goals" value="agility">
+              <input type="checkbox" name="goals" value="Agility y destreza">
               <span>Agility y destreza</span>
             </label>
             <label class="option-card">
-              <input type="checkbox" name="goals" value="rehabilitacion">
+              <input type="checkbox" name="goals" value="Movilidad">
               <span>Movilidad / Hidroterapia</span>
             </label>
           </div>
@@ -96,9 +98,9 @@
             <label for="socialization">¿Convive bien con otros perros? *</label>
             <select id="socialization" name="socialization" required>
               <option value="">Selecciona una opción...</option>
-              <option value="si">Sí, es muy sociable</option>
-              <option value="selectivo">Es selectivo (requiere presentación)</option>
-              <option value="no">No, prefiere entrenamiento individual</option>
+              <option value="Sí, sociable">Sí, es muy sociable</option>
+              <option value="Selectivo">Es selectivo (requiere presentación)</option>
+              <option value="No">No, prefiere entrenamiento individual</option>
             </select>
           </div>
 
@@ -106,8 +108,8 @@
             <label for="vaccines">¿Carnet de vacunas al día? *</label>
             <select id="vaccines" name="vaccines" required>
               <option value="">Selecciona estado...</option>
-              <option value="si">Sí (Óctuple, Antirrábica y Kennel Cough)</option>
-              <option value="pendiente">En proceso / Próxima a renovar</option>
+              <option value="Al día">Sí (Óctuple, Antirrábica y Kennel Cough)</option>
+              <option value="Pendiente">En proceso / Próxima a renovar</option>
             </select>
           </div>
         </div>
@@ -157,19 +159,89 @@
       </div>
     </form>
 
-    <!-- Tarjeta de Ficha Generada (visible después de cerrar la X) -->
+    <!-- Botón Único de Acceso Seguro al Panel Admin -->
+    <div class="admin-access-container">
+      <button type="button" id="openAdminLoginBtn" class="btn-admin-access">🔐 Panel Administrador (Data View)</button>
+    </div>
+
+    <!-- Tarjeta de Ficha Generada (Solo botón para registrar otra mascota) -->
     <section id="summaryCard" class="summary-banner hidden">
       <h2>¡Ficha de Ingreso Generada!</h2>
       <p id="summaryText"></p>
-      <button type="button" id="resetBtn" class="btn-secondary">Registrar otra mascota</button>
+      <div class="summary-btn-group">
+        <button type="button" id="resetBtn" class="btn-secondary">Registrar otra mascota</button>
+      </div>
     </section>
   </main>
 
-  <!-- MODAL DE CELEBRACIÓN CON CONFETI, EMOTICON Y BOTÓN X -->
+  <!-- ================= PANTALLA 2: DATA VIEW (ADMIN) ================= -->
+  <section id="adminScreen" class="container hidden">
+    <div class="dashboard-full-card">
+      <div class="dashboard-header">
+        <div>
+          <h2>📊 Panel de Inscripciones - GimDog - Data View</h2>
+          <p>Registros activos en la sesión actual</p>
+        </div>
+        <div class="dashboard-actions-top">
+          <button type="button" id="addNewPetBtn" class="btn-submit" style="padding: 0.7rem 1.2rem; font-size: 0.9rem;">➕ Agregar nueva mascota</button>
+          <button type="button" id="exportExcelBtn" class="btn-icon-export" title="Descargar como Excel (.xlsx)">📥 Excel</button>
+          <button type="button" id="exportPdfBtn" class="btn-icon-export" title="Guardar como PDF">📄 PDF</button>
+          <button type="button" id="resetTableBtn" class="btn-icon-reset" title="Restablecer registros por defecto">🔄 Resetear</button>
+          <button type="button" id="backToFormBtn" class="btn-secondary" style="margin:0;">← Volver</button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="excel-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Mascota</th>
+              <th>Tamaño</th>
+              <th>Edad</th>
+              <th>Energía</th>
+              <th>Objetivos</th>
+              <th>Sociable</th>
+              <th>Vacunas</th>
+              <th>Notas Médicas</th>
+              <th>Tutor</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+            </tr>
+          </thead>
+          <tbody id="excelTableBody">
+            <!-- Se llena con JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL DE LOGIN ADMIN -->
+  <div id="adminLoginModal" class="celebration-overlay hidden">
+    <div class="celebration-box login-box">
+      <button type="button" id="closeLoginBtn" class="close-x">&times;</button>
+      <h2>Acceso Administrador</h2>
+      <p>Ingresa tus credenciales para ver Data View.</p>
+      
+      <div class="form-group" style="text-align: left;">
+        <label for="adminUser">Usuario</label>
+        <input type="text" id="adminUser" placeholder="admin1">
+      </div>
+      <div class="form-group" style="text-align: left;">
+        <label for="adminPass">Contraseña</label>
+        <input type="password" id="adminPass" placeholder="admin1234">
+      </div>
+      <div id="loginError" class="alert alert-error hidden" style="margin-bottom: 1rem;"></div>
+      <button type="button" id="submitLoginBtn" class="btn-submit">Entrar al Panel</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE CELEBRACIÓN CON CONFETI Y EMOTICON -->
   <div id="celebrationModal" class="celebration-overlay hidden">
     <canvas id="confettiCanvas"></canvas>
     <div class="celebration-box">
-      <button type="button" id="closeCelebrationBtn" class="close-x" title="Cerrar y ver ficha">&times;</button>
+      <button type="button" id="closeCelebrationBtn" class="close-x" title="Cerrar y leer ficha">&times;</button>
       <div class="dog-emoji" aria-hidden="true">🐶</div>
       <h2>¡Guau! ¡Bienvenido a GimDog!</h2>
       <p id="celebrationPetMsg">Tu peludo ya es parte de la manada.</p>
